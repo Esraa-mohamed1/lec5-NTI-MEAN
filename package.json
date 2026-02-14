@@ -1,0 +1,29 @@
+{
+  "name": "ntidp",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Esraa-mohamed1/nti-mongo#readme",
+  "bugs": {
+    "url": "https://github.com/Esraa-mohamed1/nti-mongo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Esraa-mohamed1/nti-mongo.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.23.0",
+    "nodemailer": "^8.0.1"
+  }
+}
