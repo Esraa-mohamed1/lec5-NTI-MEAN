@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+
+
+
 const noteschema = new mongoose.Schema({
     title:String,
     content:String,

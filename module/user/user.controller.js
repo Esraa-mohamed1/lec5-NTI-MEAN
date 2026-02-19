@@ -1,4 +1,9 @@
 import { UserModel } from "../../database/models/user.model.js";
+
+
+
+
+ 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../../email/email.js";
@@ -39,10 +44,12 @@ export const signin = async (req, res) => {
       return res.status(401).json({ message: "Please confirm your email first" });
     }
 
-    const token = jwt.sign({ _id: foduser._id }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+
+    const accessToken = jwt.sign({ _id: foduser._id, role: foduser.role }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+    const refreshToken = jwt.sign({ _id: foduser._id, role: foduser.role }, process.env.JWT_REFRESH_SECRET_KEY || "refreshsecret", { expiresIn: "7d" });
 
     foduser.password = undefined;
-    return res.status(200).json({ message: "user login", data: foduser, token });
+    return res.status(200).json({ message: "user login", data: foduser, accessToken, refreshToken });
 
   } catch (error) {
     res.status(500).json({ message: "error login user", error })
@@ -52,17 +59,17 @@ export const signin = async (req, res) => {
 
 export const verifyAccount = async (req, res) => {
   try {
-    const { token } = req.params; 
+    const { token } = req.params;
 
     jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(400).json({ message: "Invalid or expired token" });
       }
-               
+
       const updatedUser = await UserModel.findOneAndUpdate(
         { email: decoded.email },
         { isConfirmed: true },
-      
+
       );
 
       if (!updatedUser) {
@@ -76,3 +83,17 @@ export const verifyAccount = async (req, res) => {
   }
 };
 
+
+
+
+export const refreshToken = (req, res) => {
+  const { token } = req.body;
+  if (!token) return res.status(401).json({ message: "Refresh token required" });
+
+  jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY || "refreshsecret", (err, decoded) => {
+    if (err) return res.status(403).json({ message: "Invalid or expired refresh token" });
+
+    const accessToken = jwt.sign({ _id: decoded._id, role: decoded.role ,type:"refresh"}, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+    res.status(200).json({ accessToken });
+  });
+};

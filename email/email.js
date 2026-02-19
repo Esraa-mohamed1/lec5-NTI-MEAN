@@ -1,6 +1,15 @@
 import nodemailer from "nodemailer";
+
+
+
+
 import jwt from "jsonwebtoken";
 import { templete } from "./emailtemplete.js";
+
+
+
+
+
 
 export async function sendEmail(email){
   const transporter = nodemailer.createTransport({
@@ -12,7 +21,6 @@ export async function sendEmail(email){
     }
   });
   const emailtoken = jwt.sign({ email }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
-
   const info = await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
