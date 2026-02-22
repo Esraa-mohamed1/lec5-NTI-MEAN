@@ -1,26 +1,20 @@
 import { UserModel } from "../../database/models/user.model.js";
-
-
-
-
- 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { sendEmail } from "../../email/email.js";
 
 
-
-export const signup = async (req, res) => {
+export const signup = async (req, res,next) => {
   try {
-    sendEmail(req.body.email);
     const adduser = await UserModel.insertMany(req.body);
-    console.log(req.body);
+
+
+
     res.status(201).json({
       message: "user added",
       user: adduser
     })
   } catch (error) {
-    res.status(500).json({ message: "error adding user", error })
+    next(error)
   }
 }
 
@@ -93,7 +87,7 @@ export const refreshToken = (req, res) => {
   jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY || "refreshsecret", (err, decoded) => {
     if (err) return res.status(403).json({ message: "Invalid or expired refresh token" });
 
-    const accessToken = jwt.sign({ _id: decoded._id, role: decoded.role ,type:"refresh"}, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+    const accessToken = jwt.sign({ _id: decoded._id, role: decoded.role, type: "refresh" }, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
     res.status(200).json({ accessToken });
   });
 };
